@@ -20,6 +20,17 @@
       </div>
       <h1>Abstract</h1><hr/>
       <p>In our project, we worked on physically-based rendering of hair by implementing the Kajiya-Kay, thin dielectric, and Marschner models of hair as BSDFs in the Mitsuba renderer. Kajiya-Kay’s model assumes that light diffracts in a cone around the hair fiber, which causes the primary specular component to fall off more gently in the direction of reflection. With the thin dielectric model, the effects of multiple reflections inside the hair fiber create a secondary halo effect which renders hair more realistically. Finally, we implemented the Marschner model which considers three scattering modes: reflect (R), transmit-transmit (TT), and transmit-reflect-transmit (TRT). The Marschner model also considers other elements of the hair geometry such as angled scales which shift the specular highlights, and absorption within the fiber. We implemented these three models with decent rendering results and compared the differences between them.</p>
+      
+      <h1>Kajiya-Kay Model</h1><hr/>
+      <div class="row">
+        <div class="col-12 col-md-8">
+          The basic idea of the Kajiya-Kay model is that light will reflect in a cone shape given by the mirrored vector rotated around the hair tangent which runs along the fiber from root to tip.
+        </div>
+        <div class="col-6 col-md-4">
+          <img src="hair.png">
+        </div>  
+      </div>
+    
       <h1>References</h1><hr/>
       <p>Marschner Model (2003): <a href="http://www.graphics.stanford.edu/papers/hair/hair-sg03final.pdf">http://www.graphics.stanford.edu/papers/hair/hair-sg03final.pdf</a></p>
       <p>Kajiya Model (1989): <a href="https://www.cs.drexel.edu/~david/Classes/CS586/Papers/p271-kajiya.pdf">https://www.cs.drexel.edu/~david/Classes/CS586/Papers/p271-kajiya.pdf</a></p>
