@@ -48,13 +48,37 @@
       <p>The end result has a more vivid color, softer highlights overall, and a diffraction pattern that extends down the hair fibers compared to Phong’s model. In comparison, the lighting in Phong’s model is much harsher.</p>
       
       <h1>Thin Dielectric Model</h1><hr/>
+      <p>The Marschner paper begins with the assumption that hair is a thin dielectric cylinder, and so we tried modeling with that first to see the difference. Using the thin dielectric model, we end up with a secondary halo due to transmitted and reflected terms. </p>
+      <p>The thin dielectric model is similar to the glass model that we implemented in class. With probability R, R being the Fresnel term, light reflects. Otherwise, it refracts. Reflectance is the same as what we do in class with the resulting vector being Vector(-wi.x, -wi.y, wi.z), whereas for transmittance, it is simply Vector(-wi.x, -wi.y, -wi.z).</p>
+      <p>Ultimately, the result does not look realistic since it is essentially thin strands of glass. However, you do begin to see the secondary halo caused by the additional transmittance interactions. The rendered result has no color because it does not have the diffuse term.</p>
+        <div class="row">
+        <div class="col-6 col-md-6">
+          Phong Model
+          <img src="#.png">  
+        </div>
+        <div class="col-6 col-md-6">
+          Kajiya-Kay
+          <img src="#.png">
+        </div>  
+      </div>
+  
+      <h1>Marschner Model</h1><hr/>
+  
+      <h1>Problems Encountered</h1><hr/>
+      <p>The biggest challenge we faced was understanding exactly how Mitsuba worked. It was particularly hard figuring out how to compile the renderer and write a BSDF file since there was little documentation and online resources explaining it, making it unnecessarily difficult when learning how the renderer was actually interacting with its files. The most common way we fixed these issues were through trial and error, often resorting to print statements when we wanted to debug the code to understand what it was actually computing. </p>
+      <p>The first major issue we encountered was finding a working version of Mitsuba that could compile for each of us consistently. In the first week of working, we had gone through a modifiable version of Mitsuba 2 (but was missing a Hair class) and an application-only version of Mitsuba 1. When we did find a modifiable version of Mitsuba 1 we could fork from, since our personal computers were split among MacOS and Linux, we often had build problems and had to find solutions to each of them. However, issues kept persisting, so we ended up building a version supported by Docker to resolve them.</p>
+      <p>In our earlier attempts at Marschner BSDFs, we faced another major issue where we ran into many specs of light in the hair renderings that were too bright. </p>
+      <img src="#.png">
+  
+      <p>This issue was mentioned in the Marschner paper as due to discontinuities in the mathematical model in the TRT component. In order to fix this issue, we turned off importance sampling and also increased the sampling rate. </p>
+      <p>Some other smaller issues that popped up were invalid sample point errors, which we realized were caused by invalid PDF calculations when print debugging, and missing color in the image renderings which we realized were caused by missing diffuse components.</p>
   
       <h1>References</h1><hr/>
       <p>Marschner Model (2003): <a href="http://www.graphics.stanford.edu/papers/hair/hair-sg03final.pdf">http://www.graphics.stanford.edu/papers/hair/hair-sg03final.pdf</a></p>
       <p>Kajiya Model (1989): <a href="https://www.cs.drexel.edu/~david/Classes/CS586/Papers/p271-kajiya.pdf">https://www.cs.drexel.edu/~david/Classes/CS586/Papers/p271-kajiya.pdf</a></p>
   
       <h1>Team Member Contributions</h1>
-      <p>Initially, the work was split up such that Briana and Yi figured out how the Mistuba code base worked while Ja and Richard read the papers to understand the mathematical background more. Briana and Yi first implemented a simple Mirror BSDF, and then Ja implemented the Kajiya Kay model. Briana then created the modified thin dielectric model while Yi and Richard started working on the Marschner model. In the middle, Briana’s OS updated and Ja created a Docker file that allowed everyone to work properly. Everyone worked together in order to finish implementing the initial Marschner model. Yi added the diffuse component to the Marschner model. Ja went deep into the code base in order to turn off importance sampling and increase sampling rate in order to fix our dotting issues.</p>
+      <p>Initially, the work was split up such that Briana and Yi figured out how the Mitsuba code base worked while Ja and Richard read the papers to understand the mathematical background more. Briana and Yi first implemented a simple Mirror BSDF, and then Ja implemented the Kajiya-Kay model. Briana then created the modified thin dielectric model while Yi and Richard started working on the Marschner model. In the middle, Briana’s OS updated and Ja created a Docker file that allowed everyone to work properly. Everyone worked together in order to finish implementing the initial Marschner model. Yi added the diffuse component to the Marschner model. Ja turned off importance sampling and increased sampling rate in order to fix our dotting issues.</p>
     </div>
   </body>
 </html>
