@@ -55,7 +55,6 @@
       </div>
       <p>The end result has a more vivid color, softer highlights overall, and a diffraction pattern that extends down the hair fibers compared to Phong’s model. In comparison, the lighting in Phong’s model is much harsher.</p>
       
-        $e_x^{12}$
       <h1>Thin Dielectric Model</h1><hr/>
       <p>The Marschner paper begins with the assumption that hair is a thin dielectric cylinder, and so we tried modeling with that first to see the difference. Using the thin dielectric model, we end up with a secondary halo due to transmitted and reflected terms. </p>
       <p>The thin dielectric model is similar to the glass model that we implemented in class. With probability R, R being the Fresnel term, light reflects. Otherwise, it refracts. Reflectance is the same as what we do in class with the resulting vector being Vector(-wi.x, -wi.y, wi.z), whereas for transmittance, it is simply Vector(-wi.x, -wi.y, -wi.z).</p>
