@@ -103,14 +103,15 @@
       <p>The azimuthal function was much more difficult to compute. We ended up using the azimuthal function proposed in the d’Eon paper, which was much more computationally tractable.</p>
       
       <div class="container-fluid text-center"><img style="width:55%" src="images/mm_ray.png"></div>
-      <p class="text-center">$$N_p(\phi) = \frac{1}{2} \int_{-1}^1 A(p, h)D_p(\phi - \Phi(p, h))dh$$ </p>
+      <p class="text-center">$$N_p(\phi) = \frac{1}{2} \int_{-1}^1 We can also break down the three components’ contributions here:
+D_p(\phi - \Phi(p, h))dh$$ </p>
       <p>The azimuthal function varies for every ray, where each ray is labeled with $p$. $p$ is just 0, 1, or 2 which is labeled in the diagram of rays. $h$ can be seen in the original marschner diagram, and the $\Phi$, $D$ and $A$ function are calculated as follows.  </p>
       
       <p class="text-center">$$\Phi(p, h) = 2 p \gamma_t - 2 \gamma_i + p\pi$$ </p>
       <p>Where $\gamma_t = arcsin(h/\eta)$, $\eta$ being the index of refraction, and $\gamma_i = arcsin(h)$. These values can be seen in the original Marschner model. </p>
       <p class="text-center">$$D_p(\phi) = \sum_{k=-\infty}^{\infty} g(\beta_p; \phi - 2 \pi k)$$</p>
       <p>In the code, we approximate $D_p$ by summing the Gaussians starting from the middle and expanding outwards. We start by summing the Gaussians at $k = 0$ and $k = -1$, then summing $k = 1$ and $k = -2$ and adding that to the sum, and so on until the change in the sum each iteration no longer exceeds a certain threshold.</p>
-      <p class="text-center">$$A(p, h) = (1 - f)^2  f^{p - 1} T(\mu_a^’, h)^p$$</p>
+      <p class="text-center">$$A(p, h) = (1 - f)^2  f^{p - 1} T(\mu_a^{’}, h)^p$$</p>
       <p>Where $f$ is the fresnel term and $T(\mu_a, h)$ is the absorption function and $\mu_a$ is the absorption coefficient.</p>
       <p class="text-center">$$f = F(\eta, arccos(cos(\theta_d) cos(arcsin(h)))$$</p>
       <p class="text-center">$$T(\mu_a, h) = exp(-2 \mu_a (1 + cos(2 \gamma_t)))$$</p>
