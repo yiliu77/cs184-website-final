@@ -38,7 +38,7 @@
           <img style="width:60%;" src="images/kk_diagram.png">
         </div>  
       </div>
-      <p>Kajiya-Kay’s model modifies the Phong specular term to only depend on the angle to the hair fiber and uses the following equation:</p>      <div class="container-fluid text-center"><img class="text-center" style="width:40%" src="images/kk_math.png"></div>
+      <p>Kajiya-Kay’s model modifies the Phong specular term to only depend on the angle to the hair fiber and uses the following equation:</p>
       <p class="text-center">$$\begin{align} \Psi_{specular} &= k_s cos^p(\theta) - \theta ‘ \\ &= k_s (cos \theta cos \theta ‘ + sin \theta sin \theta ‘)^p \\ &= k_s(t \cdot l t \cdot e + sin(t, l) sin(t, e))^p\end{align}$$</p>
   
       <p>The variables in this equation are illustrated in the diagram above. Most importantly, $t$ is the hair tangent, $e$ is the vector that points to the camera, $l$ is the vector that points to the light source, and theta/theta prime refers to the angles between these vectors and the tangent. $k_s$ is the specular term’s coefficient and $p$ is the Phong exponent that controls the power falloff with increasing angular difference.</p>
@@ -56,14 +56,14 @@
       </div>
       <p>The results obviously look very similar, since they are based on a similar principle. However, with our version of Kajiya-Kay, the end result has a more vivid color, softer highlights overall, while still retaining the diffraction pattern that extends down the hair fibers. The specular term also falls off much more quickly with viewing angle and this is probably due to the new alpha term.</p>
       <p>We can render the specular term separately in order to see how the highlights behave:</p>
-      <img style="width:55%" src="images/kk_black.png">
+      <div class="container-fluid text-center"><img style="width:55%" src="images/kk_black.png"></div>
       <p>Here are more renders on other models:</p>
       <div class="row">
         <div class="text-center col-6 col-md-6">
           <img style="width:55%" src="images/kk_left.png">  
         </div>
         <div class="text-center col-6 col-md-6">
-          <img style="width:55%" src="images/kk_right.png">
+          <img style="width:62%" src="images/kk_right.png">
         </div>  
       </div>
   
@@ -71,18 +71,57 @@
       <p>The Marschner paper begins with the assumption that hair is a thin dielectric cylinder, and so we tried modeling with that first to see the difference. Using the thin dielectric model, we end up with a secondary halo due to transmitted and reflected terms. </p>
       <p>The thin dielectric model is similar to the glass model that we implemented in class. With probability R, R being the Fresnel term, light reflects. Otherwise, it refracts. Reflectance is the same as what we do in class with the resulting vector being Vector(-wi.x, -wi.y, wi.z), whereas for transmittance, it is simply Vector(-wi.x, -wi.y, -wi.z).</p>
       <p>Ultimately, the result does not look realistic since it is essentially thin strands of glass. However, you do begin to see the secondary halo caused by the additional transmittance interactions. The rendered result has no color because it does not have the diffuse term.</p>
-        <div class="row">
+      <div class="row">
         <div class="text-center col-6 col-md-6">
           <p><b>Phong Model</b><br></p>
-          <img style="width:55%" src="images/td_left.png">  
+          <img style="width:62%" src="images/td_left.png">  
         </div>
         <div class="text-center col-6 col-md-6">
           <p><b>Kajiya-Kay</b><br></p>
-          <img style="width:55%" src="images/td_right.png">
+          <img style="width:62%" src="images/td_right.png">
         </div>  
       </div>
   
       <h1>Marschner Model</h1><hr/>
+      <p>The Marschner model incorporates three primary scattering modes: reflectance (R), transmit-transmit (TT), and transmit-reflect-transmit (TRT). It models the hair as a thin dielectric cylinder, incorporates the fact that hair is covered by scales that angle towards the hair root, and derives custom scattering functions based on the three modes of interaction as shown below:</p>
+      <div class="row">
+        <div class="text-center col-6 col-md-6">
+          <img style="width:62%" src="images/mm_left.png">  
+        </div>
+        <div class="text-center col-6 col-md-6">
+          <img style="width:62%" src="images/mm_right.png">
+        </div>  
+      </div>
+      <p>In addition to these terms, we added a diffuse term based on the microfacet model in order to add color. In terms of sampling, we looked for importance sampling of the Marschner model and found many results, but ultimately decided to stick with cosine hemisphere sampling. </p>
+      <p>We implemented the Marschner model, focusing on the following function from the paper for the three components:</p>
+      <p class="text-center">$$\begin{align} S(\phi_i, \theta_i; \phi_r, \theta_r) &= M_R(theta_h) N_R(\eta’ (\eta, \theta_d); \phi) / cos^2(\theta_d) + \\ &M_{TT}(\theta_h) N_{TT}(\eta’ (\eta, \theta_d); \phi) / cos^2 \theta_d + \\ & M_{TRT}(\theta_h) N_{TRT} (\eta’ (\eta * (\phi_h), theta_d); \phi) / cos^2 \theta_d \end{align}$$</p>
+      <p>This is the scattering function given an input direction and output direction, which are both parametrized by the longitudinal angle $\theta$ along the hair fiber, and the azimuthal angle $\phi$ along the cross section. We see that it is broken up into terms for each of the three scattering modes and by each angle (M/N). We adapted the BSDF’s eval() function to calculate the $\phi$ and $\theta$ necessary to be passed into this function. </p>
+      <p>$$\begin{align*} M_R(\theta_h) &= g(\Beta_R; \theta_h - \alpha_R) \\ M_TT(\theta_h) &= g(\Beta_TT; \theta_h - \alpha_TT) \\ M_TRT(\theta_h) &= g(\Beta_TRT; \theta_h - \alpha_TRT) \end{align*}$$</p>
+      <p>The longitudinal scattering function is a gaussian parametrized with a variance of $\beta$, a constant given in the paper, and a mean of $\theta_h - \alpha$ where $\alpha$ is also a constant. $\theta_h$ is the expected angle that the ray would shoot outwardly if the hair were a perfect cylinder. Then, $\alpha$ represents the tilt of the hair scales resulting in the R term shifting towards the root and the TT and TRT terms shifting towards the tip. We end up messing with the coefficients for each model for aesthetic purposes. The final coefficients of alpha that we used were $m_R = 2, , m_{TT} = 1, m_{TRT} = 1$.</p>
+      
+      <div class="container-fluid text-center"><img style="width:55%" src="images/kk_left.png"></div>
+      <p>The azimuthal function was much more difficult to compute. We ended up using the azimuthal function proposed in the d’Eon paper, which was much more computationally tractable.</p>
+      
+      <div class="container-fluid text-center"><img style="width:55%" src="images/mm_ray.png"></div>
+      <p class="text-center">$$N_p(\fi) = \frac{1}{2} \int_{-1}^1 A(p, h)D_p(\phi - \Phi(p, h))dh$$ </p>
+      <p>The azimuthal function varies for every ray, where each ray is labeled with $p$. $p$ is just 0, 1, or 2 which is labeled in the diagram of rays. $h$ can be seen in the original marschner diagram, and the $\Phi$, $D$ and $A$ function are calculated as follows.  </p>
+      
+      <p class="text-center">$$\Phi(p, h) = 2 p \gamma_t - 2 \gamma_i + p\pi$$ </p>
+      <p>Where $\gamma_t = arcsin(h/\eta)$, $\eta$ being the index of refraction, and $\gamma_i = arcsin(h)$. These values can be seen in the original Marschner model. </p>
+      <p class="text-center">$$D_p(\phi) = \sum_{k=-\infty}^{\infty} g(\beta_p; \phi - 2 \pi k)$$</p>
+      <p>In the code, we approximate $D_p$ by summing the Gaussians starting from the middle and expanding outwards. We start by summing the Gaussians at $k = 0$ and $k = -1$, then summing $k = 1$ and $k = -2$ and adding that to the sum, and so on until the change in the sum each iteration no longer exceeds a certain threshold.</p>
+      <p class="text-center">$$A(p, h) = (1 - f)^2  f^{p - 1} T(\mu_a^’, h)^p$$</p>
+      <p>Where $f$ is the fresnel term and $T(\mu_a, h)$ is the absorption function and $\mu_a$ is the absorption coefficient.</p>
+      <p class="text-center">$$f = F(\eta, arccos(cos(\theta_d) cos(arcsin(h)))$$</p>
+      <p class="text-center">$$T(\mu_a, h) = exp(-2 \mu_a (1 + cos(2 \gamma_t)))$$</p>
+      <p>The exact integrand $N_p$ integrand is computationally expensive, so instead we use an approximation with the Gauss-Legendre quadrature, inspired by other BSDF implementations that we saw.  </p>
+      <p class="text-center">$$\int_{-1}^1 f(x)dx \approx \sum_{i=1}^n w_i f(x_i)$$</p>
+      <p>For the approximation, we precompute a 64 by 64 grid of values corresponding to the azimuthal angle phi and cosine of half angle $cos(thetaD)$. During run time, we use bilinear interpolation for points in between points in the grid. This grid is also precomputed and thus uses very little computation during run time. This furthermore provides a degree of blurriness that the Marschener paper has stated will result in slightly more realistic rendering by smoothing out the light rays. </p>
+      <p>An interesting observation we had was that the reason why Kajiya-Kay works so well is because it scatters the light similar to the reflectance component of the Marschner model, since by modeling the hair as having scales, it will reflect more in a cone shape. </p>
+      
+      <h1>Results</h1><hr/>
+      <p>Here’s a render of the straight hair model with a side-by-side Phong model baseline:</p>
+  
   
       <h1>Problems Encountered</h1><hr/>
       <p>The biggest challenge we faced was understanding exactly how Mitsuba worked. It was particularly hard figuring out how to compile the renderer and write a BSDF file since there was little documentation and online resources explaining it, making it unnecessarily difficult when learning how the renderer was actually interacting with its files. The most common way we fixed these issues were through trial and error, often resorting to print statements when we wanted to debug the code to understand what it was actually computing. </p>
