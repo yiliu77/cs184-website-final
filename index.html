@@ -121,23 +121,86 @@
       
       <h1>Results</h1><hr/>
       <p>Here’s a render of the straight hair model with a side-by-side Phong model baseline:</p>
-  
+      <div class="row">
+        <div class="text-center col-6 col-md-6">
+          <img style="width:62%" src="images/r_left.png">  
+        </div>
+        <div class="text-center col-6 col-md-6">
+          <img style="width:62%" src="images/r_right.png">
+        </div>  
+      </div>
+      <p>We can also break down the three components’ contributions here:</p>
+      <div class="row">
+        <div class="text-center col-4 col-md-4">
+          <img style="width:62%" src="images/rr_left.png">  
+        </div>
+        <div class="text-center col-4 col-md-4">
+          <img style="width:62%" src="images/rr_middle.png">
+        </div>  
+        <div class="text-center col-4 col-md-4">
+          <img style="width:62%" src="images/rr_right.png">
+        </div>  
+      </div>
+      <p>Here are some other miscellaneous renders using the Marschner model:</p>
+      <div class="row">
+        <div class="text-center col-6 col-md-6">
+          <img style="width:62%" src="images/rrr_left.png">  
+        </div>
+        <div class="text-center col-6 col-md-6">
+          <img style="width:62%" src="images/rrr_right.png">
+        </div>  
+      </div>
   
       <h1>Problems Encountered</h1><hr/>
-      <p>The biggest challenge we faced was understanding exactly how Mitsuba worked. It was particularly hard figuring out how to compile the renderer and write a BSDF file since there was little documentation and online resources explaining it, making it unnecessarily difficult when learning how the renderer was actually interacting with its files. The most common way we fixed these issues were through trial and error, often resorting to print statements when we wanted to debug the code to understand what it was actually computing. </p>
-      <p>The first major issue we encountered was finding a working version of Mitsuba that could compile for each of us consistently. In the first week of working, we had gone through a modifiable version of Mitsuba 2 (but was missing a Hair class) and an application-only version of Mitsuba 1. When we did find a modifiable version of Mitsuba 1 we could fork from, since our personal computers were split among MacOS and Linux, we often had build problems and had to find solutions to each of them. However, issues kept persisting, so we ended up building a version supported by Docker to resolve them.</p>
-      <p>In our earlier attempts at Marschner BSDFs, we faced another major issue where we ran into many specs of light in the hair renderings that were too bright. </p>
-      <img src="#.png">
+      <p>The biggest challenge we faced was getting started with developing on Mitsuba and understanding its idiosyncrasies. For one, we ran into build issues on both macOS and Linux due to missing, outdated, and incorrect dependencies. We eventually built a Docker image to help us compile and render cross-platform. </p>
+      <p>Furthermore, it was difficult to understand exactly how Mitsuba worked, especially when things went wrong. There was also little documentation on how to write a new BSDF in general or how to extend the existing codebase. We ended up looking at other existing BSDFs, spending time reading through the Mitsuba source code, and comparing Mitsuba to our pathtracer project to resolve these issues as they had similar architectures. </p>
+      <p>While implementing Kajiya-Kay we had some trouble verifying that our code was producing the correct results, as Kajiya-Kay can seem very visually similar to the specular components of other BSDFs. To verify this we tried a variety of scenes, but also verified our calculations by comparing computed radiance values with a model built in a 3D graphing calculator that can directly evaluate the functions given in the paper.</p>
+      <p>Implementing the Marscher BSDF was very difficult due to the highly mathematical nature of the model and lack of implementation details in the paper. To solve this, we read a lot of papers that built off the Marscher theory such as those by d’Eon et al. These papers often included improved constants or practical techniques for evaluating the functions given in Marschner’s paper. We also took a look at some existing implementations in existing renderers such as Tungsten, and implementation guides from the <a href="https://www.pbrt.org/hair.pdf">Physically Based Ray Tracing book</a>. Finally, we just sat down and acquainted ourselves with the maths and reasoned it out until we were able to implement it properly.</p>
+      <p>With both models, we had to make some ad-hoc adjustments depending on the rendering results in order to improve visual quality. We had to adjust coefficients for both models and tune them by hand, which is not ideal since they could be considered magic constants that masked an inaccuracy with the model or a particular scaling factor/weighing that’s used internally in the renderer. However, it shows that some adjustments in translating from theory to practice are unavoidable.</p>
   
-      <p>This issue was mentioned in the Marschner paper as due to discontinuities in the mathematical model in the TRT component. In order to fix this issue, we turned off importance sampling and also increased the sampling rate. </p>
-      <p>Some other smaller issues that popped up were invalid sample point errors, which we realized were caused by invalid PDF calculations when print debugging, and missing color in the image renderings which we realized were caused by missing diffuse components.</p>
+      <h1>Lessons Learned</h1><hr/>
+      <p>The main mistake we made was that we tried to implement Marschner before completely understanding how Mitsuba worked. In the end, we had to go back and try to understand Mitsuba more deeply, which cost a lot of time. In retrospect, we should have just taken the time to fully understand Mistuba before writing any code. </p>
+      
+      <h1>Results and comparisons</h1><hr/>
+      <p>Here are the final renders again put next to each other for comparison. We’ve included Phong shading as a default baseline model.</p>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Model</th>
+            <th scope="col">Rough Plastic</th>
+            <th scope="col">Kajiya-Kay</th>
+            <th scope="col">Marschner</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Straight hair</th>
+            <td><img src="images/cc_11.png" class="img-fluid img-thumbnail"></td>
+            <td><img src="images/cc_12.png" class="img-fluid img-thumbnail"></td>
+            <td>@<img src="images/cc_13.png" class="img-fluid img-thumbnail"></td>
+          </tr>
+          <tr>
+            <th scope="row">Furball</th>
+            <td><img src="images/cc_21.png" class="img-fluid img-thumbnail"></td>
+            <td><img src="images/cc_22.png" class="img-fluid img-thumbnail"></td>
+            <td><img src="images/cc_23.png" class="img-fluid img-thumbnail"></td>
+          </tr>
+          <tr>
+            <th scope="row">Hair curl</th>
+            <td><img src="images/cc_31.png" class="img-fluid img-thumbnail"></td>
+            <td><img src="images/cc_32.png" class="img-fluid img-thumbnail"></td>
+            <td><img src="images/cc_33.png" class="img-fluid img-thumbnail"></td>
+          </tr>
+        </tbody>
+      </table>
+  
   
       <h1>References</h1><hr/>
       <p>Marschner Model (2003): <a href="http://www.graphics.stanford.edu/papers/hair/hair-sg03final.pdf">http://www.graphics.stanford.edu/papers/hair/hair-sg03final.pdf</a></p>
       <p>Kajiya Model (1989): <a href="https://www.cs.drexel.edu/~david/Classes/CS586/Papers/p271-kajiya.pdf">https://www.cs.drexel.edu/~david/Classes/CS586/Papers/p271-kajiya.pdf</a></p>
-  
+      <p>D’ Eon, E., Francois, G., Hill, M., Letteri, J., & Aubry, J.-M. (2011). An Energy-Conserving Hair Reflectance Model. Computer Graphics Forum, 30(4), 1181–1187. doi:10.1111/j.1467-8659.2011.01976.x </p>
+        
       <h1>Team Member Contributions</h1>
-      <p>Initially, the work was split up such that Briana and Yi figured out how the Mitsuba code base worked while Ja and Richard read the papers to understand the mathematical background more. Briana and Yi first implemented a simple Mirror BSDF, and then Ja implemented the Kajiya-Kay model. Briana then created the modified thin dielectric model while Yi and Richard started working on the Marschner model. In the middle, Briana’s OS updated and Ja created a Docker file that allowed everyone to work properly. Everyone worked together in order to finish implementing the initial Marschner model. Yi added the diffuse component to the Marschner model. Ja turned off importance sampling and increased sampling rate in order to fix our dotting issues.</p>
-    </div>
+      <p>Initially, the work was split up such that Briana and Yi figured out how the Mitsuba code base worked while Ja and Richard read the papers to understand the mathematical background more. Briana and Yi first implemented a simple Mirror BSDF, and then Ja implemented the Kajiya-Kay model. Briana then created the modified thin dielectric model while Yi and Richard started working on the Marschner model. In the middle, Briana’s OS updated and Ja created a Docker file that allowed everyone to work properly. Everyone worked together in order to finish implementing the initial Marschner model. Yi added the diffuse component to the Marschner model. Ja turned off importance sampling and increased sampling rate in order to fix our dotting issues.</p>    </div>
   </body>
 </html>
