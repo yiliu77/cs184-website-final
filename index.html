@@ -38,10 +38,11 @@
           <img style="width:60%;" src="images/kk_diagram.png">
         </div>  
       </div>
-      <p>Kajiya-Kay’s model modifies the Phong specular term to only depend on the angle to the hair fiber and uses the following equation:</p>
-      <div class="container-fluid text-center"><img class="text-center" style="width:40%" src="images/kk_math.png"></div>
-      <p>The variables in this equation are illustrated in the diagram above. Most importantly, t is the hair tangent, e is the vector that points to the camera, l is the vector that points to the light source, and theta/theta prime refers to the angles between these vectors and the tangent. K_s is the specular term’s coefficient and p is the Phong exponent that controls the power falloff with increasing angular difference.</p>
-      <p>We implemented the specular term above, and made some improvements to improve perceived visual quality. Namely, we reduced the k_s coefficient to account for the diffraction around all directions of the cone and ensure there isn’t too much light in the scene. We also pruned backscatter rays (where dot(wi,wo) > 0 in the local frame) since the reflection should only go one way.</p>  
+      <p>Kajiya-Kay’s model modifies the Phong specular term to only depend on the angle to the hair fiber and uses the following equation:</p>      <div class="container-fluid text-center"><img class="text-center" style="width:40%" src="images/kk_math.png"></div>
+      <p class="text-center">$$\begin{align} \Psi_{specular} &= k_s cos^p(\theta) - \theta ‘ \\ &= k_s (cos \theta cos \theta ‘ + sin \theta sin \theta ‘)^p \\ &= k_s(t \cdot l t \cdot e + sin(t, l) sin(t, e))^p\end{align}$$</p>
+  
+      <p>The variables in this equation are illustrated in the diagram above. Most importantly, $t$ is the hair tangent, $e$ is the vector that points to the camera, $l$ is the vector that points to the light source, and theta/theta prime refers to the angles between these vectors and the tangent. $k_s$ is the specular term’s coefficient and $p$ is the Phong exponent that controls the power falloff with increasing angular difference.</p>
+      <p>We implemented the specular term above, and made some improvements to improve perceived visual quality. Namely, we reduced the $k_s$ coefficient to account for the diffraction around all directions of the cone and ensure there isn’t too much light in the scene. We also pruned backscatter rays (where $w_i \cdot w_o > 0$ in the local shading frame) since the reflection should only go one way.</p>
       <p>These are our final results. The Phong model (included with Mitsuba) is included for comparison:</p>
       <div class="row">
         <div class="text-center col-6 col-md-6">
@@ -53,8 +54,19 @@
           <img style="width:55%" src="images/kk.png">
         </div>  
       </div>
-      <p>The end result has a more vivid color, softer highlights overall, and a diffraction pattern that extends down the hair fibers compared to Phong’s model. In comparison, the lighting in Phong’s model is much harsher.</p>
-      
+      <p>The results obviously look very similar, since they are based on a similar principle. However, with our version of Kajiya-Kay, the end result has a more vivid color, softer highlights overall, while still retaining the diffraction pattern that extends down the hair fibers. The specular term also falls off much more quickly with viewing angle and this is probably due to the new alpha term.</p>
+      <p>We can render the specular term separately in order to see how the highlights behave:</p>
+      <img style="width:55%" src="images/kk_black.png">
+      <p>Here are more renders on other models:</p>
+      <div class="row">
+        <div class="text-center col-6 col-md-6">
+          <img style="width:55%" src="images/kk_left.png">  
+        </div>
+        <div class="text-center col-6 col-md-6">
+          <img style="width:55%" src="images/kk_right.png">
+        </div>  
+      </div>
+  
       <h1>Thin Dielectric Model</h1><hr/>
       <p>The Marschner paper begins with the assumption that hair is a thin dielectric cylinder, and so we tried modeling with that first to see the difference. Using the thin dielectric model, we end up with a secondary halo due to transmitted and reflected terms. </p>
       <p>The thin dielectric model is similar to the glass model that we implemented in class. With probability R, R being the Fresnel term, light reflects. Otherwise, it refracts. Reflectance is the same as what we do in class with the resulting vector being Vector(-wi.x, -wi.y, wi.z), whereas for transmittance, it is simply Vector(-wi.x, -wi.y, -wi.z).</p>
@@ -69,8 +81,6 @@
           <img style="width:55%" src="images/td_right.png">
         </div>  
       </div>
-  
-      $$S_R = \\ \theta$$
   
       <h1>Marschner Model</h1><hr/>
   
