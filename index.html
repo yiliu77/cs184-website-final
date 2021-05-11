@@ -33,7 +33,7 @@
       <p>The basic idea of the Kajiya-Kay model is that light will reflect in a cone shape given by the mirrored vector rotated around the hair tangent which runs along the fiber from root to tip.</p>
       <div class="container-fluid text-center"><img style="width:30%;" src="images/kk_diagram.png"></div>
       <p>Kajiya-Kay’s model modifies the Phong specular term to only depend on the angle to the hair fiber and uses the following equation:</p>
-      <p class="text-center">$$\begin{align} \Psi_{specular} &= k_s cos^p(\theta) - \theta ' \\ &= k_s (cos \theta cos \theta ' + sin \theta sin \theta ')^p \\ &= k_s(t \cdot l \ t \cdot e + sin(t, l) sin(t, e))^p\end{align}$$</p>
+      <p class="text-center">$$\begin{align} \Psi_{specular} &= k_s \text{cos}^p(\theta) - \theta ' \\ &= k_s (\text{cos} \theta \text{cos} \theta ' + \text{sin} \theta \text{sin} \theta ')^p \\ &= k_s(t \cdot l \ t \cdot e + \text{sin}(t, l) \text{sin}(t, e))^p\end{align}$$</p>
   
       <p>The variables in this equation are illustrated in the diagram above. Most importantly, $t$ is the hair tangent, $e$ is the vector that points to the camera, $l$ is the vector that points to the light source, and $\theta$/$\theta’$ refers to the angles between these vectors and the tangent. $k_s$ is the specular term’s coefficient and $p$ is the Phong exponent that controls the power falloff with increasing angular difference.</p>
       <p>We implemented the specular term above, and made some improvements to improve perceived visual quality. Namely, we reduced the $k_s$ coefficient to account for the diffraction around all directions of the cone and ensure there isn’t too much light in the scene. We also pruned backscatter rays (where $w_i \cdot w_o > 0$ in the local shading frame) since the reflection should only go one way.</p>
@@ -162,7 +162,7 @@
       <p>The main mistake we made was that we tried to implement Marschner before completely understanding how Mitsuba worked. In the end, we had to go back and try to understand Mitsuba more deeply, which cost a lot of time. In retrospect, we should have just taken the time to fully understand Mistuba before writing any code. </p>
       <p>With both models, we had to make some ad-hoc adjustments depending on the rendering results in order to improve visual quality. We had to adjust coefficients for both models and tune them by hand, which is not ideal since they could be considered magic constants that masked an inaccuracy with the model or a particular scaling factor/weighing that’s used internally in the renderer. However, it just shows that some adjustments in translating from theory to practice are unavoidable.</p>
   
-      <h1>Results and comparisons</h1><hr/>
+      <h1>Results and Comparisons</h1><hr/>
       <p>Here are the final renders again put next to each other for comparison. We have included Mitsuba’s Phong shading as a default baseline model.</p>
       <table class="table">
         <thead>
