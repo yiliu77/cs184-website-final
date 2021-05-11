@@ -39,11 +39,11 @@
       <p>We implemented the specular term above, and made some improvements to improve perceived visual quality. Namely, we reduced the $k_s$ coefficient to account for the diffraction around all directions of the cone and ensure there isn’t too much light in the scene. We also pruned backscatter rays (where $w_i \cdot w_o > 0$ in the local shading frame) since the reflection should only go one way.</p>
       <p>These are our final results. The Phong model of Mitsuba is included for comparison:</p>
       <div class="row">
-        <div class="text-right col-6 col-md-6">
+        <div class="text-center col-6 col-md-6">
 	  <b>Phong Model</b><br>
           <img style="width:55%" src="images/kk_phong.png">  
         </div>
-        <div class="text-left col-6 col-md-6">
+        <div class="text-center col-6 col-md-6">
 	  <b>Kajiya-Kay</b><br>
           <img style="width:55%" src="images/kk.png">
         </div>  
