@@ -33,17 +33,19 @@
       <div class="row">
         <div class="align-self-center col-12 col-md-8">
           <span class="align-middle">The basic idea of the Kajiya-Kay model is that light will reflect in a cone shape given by the mirrored vector rotated around the hair tangent which runs along the fiber from root to tip.</span>
-        </div>
-        <div class="text-center col-6 col-md-4">
-          <img style="width:60%;" src="images/kk_diagram.png">
         </div>  
       </div>
+      <div class="row">
+        <div class="text-center col-6 col-md-4">
+          <img style="width:60%;" src="images/kk_diagram.png">
+        </div>
+      </div>
       <p>Kajiya-Kay’s model modifies the Phong specular term to only depend on the angle to the hair fiber and uses the following equation:</p>
-      <p class="text-center">$$\begin{align} \Psi_{specular} &= k_s cos^p(\theta) - \theta ‘ \\ &= k_s (cos \theta cos \theta ‘ + sin \theta sin \theta ‘)^p \\ &= k_s(t \cdot l t \cdot e + sin(t, l) sin(t, e))^p\end{align}$$</p>
+      <p class="text-center">$$\begin{align} \Psi_{specular} &= k_s cos^p(\theta) - \theta ‘ \\ &= k_s (cos \theta cos \theta ‘ + sin \theta sin \theta ‘)^p \\ &= k_s(t \cdot l \ t \cdot e + sin(t, l) sin(t, e))^p\end{align}$$</p>
   
       <p>The variables in this equation are illustrated in the diagram above. Most importantly, $t$ is the hair tangent, $e$ is the vector that points to the camera, $l$ is the vector that points to the light source, and $\theta$/\$\theta’$ refers to the angles between these vectors and the tangent. $k_s$ is the specular term’s coefficient and $p$ is the Phong exponent that controls the power falloff with increasing angular difference.</p>
       <p>We implemented the specular term above, and made some improvements to improve perceived visual quality. Namely, we reduced the $k_s$ coefficient to account for the diffraction around all directions of the cone and ensure there isn’t too much light in the scene. We also pruned backscatter rays (where $w_i \cdot w_o > 0$ in the local shading frame) since the reflection should only go one way.</p>
-      <p>These are our final results. The Phong model (included with Mitsuba) is included for comparison:</p>
+      <p>These are our final results. The Phong model of Mitsuba is included for comparison:</p>
       <div class="row">
         <div class="text-center col-6 col-md-6">
           <p><b>Phong Model</b><br></p>
@@ -55,7 +57,7 @@
         </div>  
       </div>
       <p>The results obviously look very similar, since they are based on a similar principle. However, with our version of Kajiya-Kay, the end result has a more vivid color, softer highlights overall, while still retaining the diffraction pattern that extends down the hair fibers. The specular term also falls off much more quickly with viewing angle and this is probably due to the new alpha term.</p>
-      <p>We can render the specular term separately in order to see how the highlights behave:</p>
+      <p>We render the specular term individually in order to see more clearly how the highlights extend as described above:</p>
       <div class="container-fluid text-center"><img style="width:55%" src="images/kk_black.png"></div>
       <p>Here are more renders on other models:</p>
       <div class="row">
@@ -68,9 +70,10 @@
       </div>
   
       <h1>Thin Dielectric Model</h1><hr/>
-      <p>The Marschner paper begins with the assumption that hair is a thin dielectric cylinder, and so we tried modeling with that first to see the difference. Using the thin dielectric model, we end up with a secondary halo due to transmitted and reflected terms. </p>
-      <p>The thin dielectric model is similar to the glass model that we implemented in class. With probability R, R being the Fresnel term, light reflects. Otherwise, it refracts. Reflectance is the same as what we do in class with the resulting vector being Vector(-wi.x, -wi.y, wi.z), whereas for transmittance, it is simply Vector(-wi.x, -wi.y, -wi.z).</p>
-      <p>Ultimately, the result does not look realistic since it is essentially thin strands of glass. However, you do begin to see the secondary halo caused by the additional transmittance interactions. The rendered result has no color because it does not have the diffuse term.</p>
+      <p>The Marschner paper begins with the assumption that hair is a thin dielectric cylinder, and so we tried modeling with that first to see the difference. Using the thin dielectric model, we end up with a secondary halo due to transmitted and reflected terms. 
+        The thin dielectric model is similar to the glass model that we implemented in class. With probability $R$, $R$ being the Fresnel term, light reflects. Otherwise, it refracts. Reflectance is the same as what we do in class with the resulting vector being Vector(-wi.x, -wi.y, wi.z), whereas for transmittance, it is simply Vector(-wi.x, -wi.y, -wi.z).  
+        Ultimately, the result does not look realistic since it is essentially thin strands of glass. However, you do begin to see the secondary halo caused by the additional transmittance interactions. The rendered result has no color because it does not have the diffuse term.
+      </p>
       <div class="row">
         <div class="text-center col-6 col-md-6">
           <p><b>Phong Model</b><br></p>
@@ -94,20 +97,22 @@
       </div>
       <p>In addition to these terms, we added a diffuse term based on the microfacet model in order to add color. In terms of sampling, we looked for importance sampling of the Marschner model and found many results, but ultimately decided to stick with cosine hemisphere sampling. </p>
       <p>We implemented the Marschner model, focusing on the following function from the paper for the three components:</p>
-      <p class="text-center">$$\begin{align} S(\phi_i, \theta_i; \phi_r, \theta_r) &= M_R(\theta_h) N_R(\eta’ (\eta, \theta_d); \phi) / cos^2(\theta_d) + \\ &M_{TT}(\theta_h) N_{TT}(\eta’ (\eta, \theta_d); \phi) / cos^2 \theta_d + \\ & M_{TRT}(\theta_h) N_{TRT} (\eta’ (\eta * (\phi_h), \theta_d); \phi) / cos^2 \theta_d \end{align}$$</p>
+      <p class="text-center">$$\begin{align} S(\phi_i, \theta_i; \phi_r, \theta_r) &= M_R(\theta_h) N_R(\eta’ (\eta, \theta_d); \phi) / \text{cos}^2(\theta_d) + \\
+        &M_{TT}(\theta_h) N_{TT}(\eta’ (\eta, \theta_d); \phi) / \text{cos}^2 \theta_d + \\
+        & M_{TRT}(\theta_h) N_{TRT} (\eta’ (\eta * (\phi_h), \theta_d); \phi) / \text{cos}^2 \theta_d
+        \end{align}$$
+        </p>
       <p>This is the scattering function given an input direction and output direction, which are both parametrized by the longitudinal angle $\theta$ along the hair fiber, and the azimuthal angle $\phi$ along the cross section. We see that it is broken up into terms for each of the three scattering modes and by each angle (M/N). We adapted the BSDF’s eval() function to calculate the $\phi$ and $\theta$ necessary to be passed into this function. </p>
       <p>$$\begin{align*} M_R(\theta_h) &= g(\beta_R; \theta_h - \alpha_R) \\ M_{TT}(\theta_h) &= g(\beta_{TT}; \theta_h - \alpha_{TT}) \\ M_{TRT}(\theta_h) &= g(\beta_{TRT}; \theta_h - \alpha_{TRT}) \end{align*}$$</p>
       <p>The longitudinal scattering function is a gaussian parametrized with a variance of $\beta$, a constant given in the paper, and a mean of $\theta_h - \alpha$ where $\alpha$ is also a constant. $\theta_h$ is the expected angle that the ray would shoot outwardly if the hair were a perfect cylinder. Then, $\alpha$ represents the tilt of the hair scales resulting in the R term shifting towards the root and the TT and TRT terms shifting towards the tip. We end up messing with the coefficients for each model for aesthetic purposes. The final coefficients of alpha that we used were $m_R = 2, , m_{TT} = 1, m_{TRT} = 1$.</p>
-      
-      <div class="container-fluid text-center"><img style="width:55%" src="images/kk_left.png"></div>
       <p>The azimuthal function was much more difficult to compute. We ended up using the azimuthal function proposed in the d’Eon paper, which was much more computationally tractable.</p>
       
       <div class="container-fluid text-center"><img style="width:55%" src="images/mm_ray.png"></div>
-      <p class="text-center">$$N_p(\phi) = \frac{1}{2} \int_{-1}^1 A(p, h)D_p(\phi - \Phi(p, h))dh$$  </p>
+      <p class="text-center">$$N_p(\phi) = \frac{1}{2} \int_{-1}^1 A(p, h)D_p(\phi - \Phi(p, h))dh$$</p>
       <p>The azimuthal function varies for every ray, where each ray is labeled with $p$. $p$ is just 0, 1, or 2 which is labeled in the diagram of rays. $h$ can be seen in the original marschner diagram, and the $\Phi$, $D$ and $A$ function are calculated as follows.  </p>
       
       <p class="text-center">$$\Phi(p, h) = 2 p \gamma_t - 2 \gamma_i + p\pi$$ </p>
-      <p>Where $\gamma_t = \text{arcsin}(h/\eta)$, $\eta$ being the index of refraction, and $\gamma_i = \text{arcsin}(h)$. These values can be seen in the original Marschner model. </p>
+      <p>Where $\gamma_t = \text{arcsin}(h/\eta)$, $\eta$ being the index of refraction, and $\gamma_i = \text{arcsin}(h)$. These values can be seen in the original Marschner model.</p>
       <p class="text-center">$$D_p(\phi) = \sum_{k=-\infty}^{\infty} g(\beta_p; \phi - 2 \pi k)$$</p>
       <p>In the code, we approximate $D_p$ by summing the Gaussians starting from the middle and expanding outwards. We start by summing the Gaussians at $k = 0$ and $k = -1$, then summing $k = 1$ and $k = -2$ and adding that to the sum, and so on until the change in the sum each iteration no longer exceeds a certain threshold.</p>
       <p class="text-center">$$A(p, h) = (1 - f)^2  f^{p - 1} T(\mu_a^{’}, h)^p$$</p>
@@ -160,14 +165,13 @@
       <p>Furthermore, it was difficult to understand exactly how Mitsuba worked, especially when things went wrong. There was also little documentation on how to write a new BSDF in general or how to extend the existing codebase. We ended up looking at other existing BSDFs, spending time reading through the Mitsuba source code, and comparing Mitsuba to our pathtracer project to resolve these issues as they had similar architectures. </p>
       <p>While implementing Kajiya-Kay we had some trouble verifying that our code was producing the correct results, as Kajiya-Kay can seem very visually similar to the specular components of other BSDFs. To verify this we tried a variety of scenes, but also verified our calculations by comparing computed radiance values with a model built in a 3D graphing calculator that can directly evaluate the functions given in the paper.</p>
       <p>Implementing the Marscher BSDF was very difficult due to the highly mathematical nature of the model and lack of implementation details in the paper. To solve this, we read a lot of papers that built off the Marscher theory such as those by d’Eon et al. These papers often included improved constants or practical techniques for evaluating the functions given in Marschner’s paper. We also took a look at some existing implementations in existing renderers such as Tungsten, and implementation guides from the <a href="https://www.pbrt.org/hair.pdf">Physically Based Ray Tracing book</a>. Finally, we just sat down and acquainted ourselves with the maths and reasoned it out until we were able to implement it properly.</p>
-      <p>With both models, we had to make some ad-hoc adjustments depending on the rendering results in order to improve visual quality. We had to adjust coefficients for both models and tune them by hand, which is not ideal since they could be considered magic constants that masked an inaccuracy with the model or a particular scaling factor/weighing that’s used internally in the renderer. However, it shows that some adjustments in translating from theory to practice are unavoidable.</p>
   
       <h1>Lessons Learned</h1><hr/>
       <p>The main mistake we made was that we tried to implement Marschner before completely understanding how Mitsuba worked. In the end, we had to go back and try to understand Mitsuba more deeply, which cost a lot of time. In retrospect, we should have just taken the time to fully understand Mistuba before writing any code. </p>
       <p>With both models, we had to make some ad-hoc adjustments depending on the rendering results in order to improve visual quality. We had to adjust coefficients for both models and tune them by hand, which is not ideal since they could be considered magic constants that masked an inaccuracy with the model or a particular scaling factor/weighing that’s used internally in the renderer. However, it just shows that some adjustments in translating from theory to practice are unavoidable.</p>
   
       <h1>Results and comparisons</h1><hr/>
-      <p>Here are the final renders again put next to each other for comparison. We’ve included Mitsuba’s Phong shading as a default baseline model.</p>
+      <p>Here are the final renders again put next to each other for comparison. We have included Mitsuba’s Phong shading as a default baseline model.</p>
       <table class="table">
         <thead>
           <tr>
