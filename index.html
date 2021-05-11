@@ -30,32 +30,28 @@
       <p>In our project, we worked on physically-based rendering of hair by implementing the Kajiya-Kay and Marschner models of hair as BSDFs in the Mitsuba renderer. To a lesser extent we also experimented with a thin dielectric model. Kajiya-Kay’s model assumes that light diffracts in a cone around the hair fiber, which causes the primary specular component to fall off more gently in the direction of reflection. With the thin dielectric model, the effects of multiple reflections inside the hair fiber create a secondary halo effect which renders hair more realistically. Finally, we implemented the Marschner model which considers three scattering modes: reflect (R), transmit-transmit (TT), and transmit-reflect-transmit (TRT). The Marschner model also considers other elements of the hair geometry such as angled scales which shift the specular highlights, and absorption within the fiber. We implemented these three models with decent rendering results and compared the differences between them.</p>
   
       <h1>Kajiya-Kay Model</h1><hr/>
-      <div class="row">
-        <div class="align-self-center col-12 col-md-8">
-          <span class="align-middle">The basic idea of the Kajiya-Kay model is that light will reflect in a cone shape given by the mirrored vector rotated around the hair tangent which runs along the fiber from root to tip.</span>
-        </div>  
-      </div>
-      <div class="row">
-        <div class="text-center col-6 col-md-4">
-          <img style="width:60%;" src="images/kk_diagram.png">
-        </div>
-      </div>
+      <p>The basic idea of the Kajiya-Kay model is that light will reflect in a cone shape given by the mirrored vector rotated around the hair tangent which runs along the fiber from root to tip.</p>
+      <div class="container-fluid text-center"><img style="width:60%;" src="images/kk_diagram.png"></div>
       <p>Kajiya-Kay’s model modifies the Phong specular term to only depend on the angle to the hair fiber and uses the following equation:</p>
       <p class="text-center">$$\begin{align} \Psi_{specular} &= k_s cos^p(\theta) - \theta ‘ \\ &= k_s (cos \theta cos \theta ‘ + sin \theta sin \theta ‘)^p \\ &= k_s(t \cdot l \ t \cdot e + sin(t, l) sin(t, e))^p\end{align}$$</p>
   
       <p>The variables in this equation are illustrated in the diagram above. Most importantly, $t$ is the hair tangent, $e$ is the vector that points to the camera, $l$ is the vector that points to the light source, and $\theta$/\$\theta’$ refers to the angles between these vectors and the tangent. $k_s$ is the specular term’s coefficient and $p$ is the Phong exponent that controls the power falloff with increasing angular difference.</p>
       <p>We implemented the specular term above, and made some improvements to improve perceived visual quality. Namely, we reduced the $k_s$ coefficient to account for the diffraction around all directions of the cone and ensure there isn’t too much light in the scene. We also pruned backscatter rays (where $w_i \cdot w_o > 0$ in the local shading frame) since the reflection should only go one way.</p>
       <p>These are our final results. The Phong model of Mitsuba is included for comparison:</p>
-      <div class="row">
-        <div class="text-center col-6 col-md-6">
-          <p><b>Phong Model</b><br></p>
-          <img style="width:55%" src="images/kk_phong.png">  
-        </div>
-        <div class="text-center col-6 col-md-6">
-          <p><b>Kajiya-Kay</b><br></p>
-          <img style="width:55%" src="images/kk.png">
-        </div>  
-      </div>
+      <table class="table table-image">
+        <thead>
+		      <tr>
+            <th scope="col"><b>Phong Model</b></th>
+            <th scope="col"><b>Kajiya-Kay</b></th>
+          </tr>
+        </thead>
+		    <tbody>
+		      <tr>
+		        <td><img style="width:55%" src="images/kk_phong.png"></td>
+		        <td><img style="width:55%" src="images/kk.png"></td>
+          </tr>
+        </tbody>
+		  </table>   
       <p>The results obviously look very similar, since they are based on a similar principle. However, with our version of Kajiya-Kay, the end result has a more vivid color, softer highlights overall, while still retaining the diffraction pattern that extends down the hair fibers. The specular term also falls off much more quickly with viewing angle and this is probably due to the new alpha term.</p>
       <p>We render the specular term individually in order to see more clearly how the highlights extend as described above:</p>
       <div class="container-fluid text-center"><img style="width:55%" src="images/kk_black.png"></div>
