@@ -54,10 +54,10 @@
       <p>Here are more renders on other models:</p>
       <div class="row">
         <div class="text-center col-6 col-md-6">
-          <img style="width:55%" src="images/kk_left.png">  
+          <img style="width:65%" src="images/kk_left.png">  
         </div>
         <div class="text-center col-6 col-md-6">
-          <img style="width:62%" src="images/kk_right.png">
+          <img style="width:75%" src="images/kk_right.png">
         </div>  
       </div>
   
@@ -69,11 +69,11 @@
       <div class="row">
         <div class="text-center col-6 col-md-6">
           <p><b>Phong Model</b><br></p>
-          <img style="width:62%" src="images/td_left.png">  
+          <img style="width:72%" src="images/td_left.png">  
         </div>
         <div class="text-center col-6 col-md-6">
           <p><b>Kajiya-Kay</b><br></p>
-          <img style="width:62%" src="images/td_right.png">
+          <img style="width:75%" src="images/td_right.png">
         </div>  
       </div>
   
@@ -81,10 +81,10 @@
       <p>The Marschner model incorporates three primary scattering modes: reflectance (R), transmit-transmit (TT), and transmit-reflect-transmit (TRT). It models the hair as a thin dielectric cylinder, incorporates the fact that hair is covered by scales that angle towards the hair root, and derives custom scattering functions based on the three modes of interaction as shown below:</p>
       <div class="row">
         <div class="text-center col-6 col-md-6">
-          <img style="width:62%" src="images/mm_left.png">  
+          <img style="width:72%" src="images/mm_left.png">  
         </div>
         <div class="text-center col-6 col-md-6">
-          <img style="width:62%" src="images/mm_right.png">
+          <img style="width:72%" src="images/mm_right.png">
         </div>  
       </div>
       <p>In addition to these terms, we added a diffuse term based on the microfacet model in order to add color. In terms of sampling, we looked for importance sampling of the Marschner model and found many results, but ultimately decided to stick with cosine hemisphere sampling. </p>
@@ -99,7 +99,7 @@
       <p>The longitudinal scattering function is a gaussian parametrized with a variance of $\beta$, a constant given in the paper, and a mean of $\theta_h - \alpha$ where $\alpha$ is also a constant. $\theta_h$ is the expected angle that the ray would shoot outwardly if the hair were a perfect cylinder. Then, $\alpha$ represents the tilt of the hair scales resulting in the R term shifting towards the root and the TT and TRT terms shifting towards the tip. We end up messing with the coefficients for each model for aesthetic purposes. The final coefficients of alpha that we used were $m_R = 2, , m_{TT} = 1, m_{TRT} = 1$.</p>
       <p>The azimuthal function was much more difficult to compute. We ended up using the azimuthal function proposed in the d’Eon paper, which was much more computationally tractable.</p>
       
-      <div class="container-fluid text-center"><img style="width:55%" src="images/mm_ray.png"></div>
+      <div class="container-fluid text-center"><img style="width:65%" src="images/mm_ray.png"></div>
       <p class="text-center">$$N_p(\phi) = \frac{1}{2} \int_{-1}^1 A(p, h)D_p(\phi - \Phi(p, h))dh$$</p>
       <p>The azimuthal function varies for every ray, where each ray is labeled with $p$. $p$ is just 0, 1, or 2 which is labeled in the diagram of rays. $h$ can be seen in the original marschner diagram, and the $\Phi$, $D$ and $A$ function are calculated as follows.  </p>
       
@@ -120,35 +120,35 @@
       <p>Here’s a render of the straight hair model with a side-by-side Phong model baseline:</p>
       <div class="row">
         <div class="text-center col-6 col-md-6">
-          <img style="width:62%" src="images/r_left.png">  
+          <img style="width:72%" src="images/r_left.png">  
         </div>
         <div class="text-center col-6 col-md-6">
-          <img style="width:62%" src="images/r_right.png">
+          <img style="width:72%" src="images/r_right.png">
         </div>  
       </div>
       <p>We can also break down the three components’ contributions here:</p>
       <div class="row">
         <div class="text-center col-4 col-md-4">
           <p>R</p>
-          <img style="width:62%" src="images/rr_left.png">  
+          <img style="width:75%" src="images/rr_left.png">  
         </div>
         <div class="text-center col-4 col-md-4">
           <p>TT (Not visible due to light angle)</p>
-          <img style="width:62%" src="images/rr_middle.png">
+          <img style="width:75%" src="images/rr_middle.png">
         </div>  
         <div class="text-center col-4 col-md-4">
           <p>TRT</p>
-          <img style="width:62%" src="images/rr_right.png">
+          <img style="width:75%" src="images/rr_right.png">
         </div>  
       </div>
       <p>Clearly, the R term is the main halo which is shifted closer to the root compared to other models due to how the hair has angled scales. The TT term is not visible, presumably as the light is directly above the scene and the TT term goes below the hair. The TRT term creates a secondary highlight that runs all the way through the hair and down the sides, simulating complex interactions with the hair fibers.</p>
       <p>Here are some other miscellaneous renders using the Marschner model:</p>
       <div class="row">
         <div class="text-center col-6 col-md-6">
-          <img style="width:62%" src="images/rrr_left.png">  
+          <img style="width:70%" src="images/rrr_left.png">  
         </div>
         <div class="text-center col-6 col-md-6">
-          <img style="width:62%" src="images/rrr_right.png">
+          <img style="width:81%" src="images/rrr_right.png">
         </div>  
       </div>
   
