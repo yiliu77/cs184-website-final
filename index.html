@@ -29,6 +29,8 @@
       <h1>Abstract</h1><hr/>
       <p>In our project, we worked on physically-based rendering of hair by implementing the Kajiya-Kay and Marschner models of hair as BSDFs in the Mitsuba renderer. To a lesser extent we also experimented with a thin dielectric model. Kajiya-Kay’s model assumes that light diffracts in a cone around the hair fiber, which causes the primary specular component to fall off more gently in the direction of reflection. With the thin dielectric model, the effects of multiple reflections inside the hair fiber create a secondary halo effect which renders hair more realistically. Finally, we implemented the Marschner model which considers three scattering modes: reflect (R), transmit-transmit (TT), and transmit-reflect-transmit (TRT). The Marschner model also considers other elements of the hair geometry such as angled scales which shift the specular highlights, and absorption within the fiber. We implemented these three models with decent rendering results and compared the differences between them.</p>
   
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/JRiNvqOvnFI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
       <h1>Kajiya-Kay Model</h1><hr/>
       <p>The basic idea of the Kajiya-Kay model is that light will reflect in a cone shape given by the mirrored vector rotated around the hair tangent which runs along the fiber from root to tip.</p>
       <div class="container-fluid text-center"><img style="width:30%;" src="images/kk_diagram.png"></div>
@@ -196,10 +198,6 @@
       </table>
       <p>There is some noise in the Marschner renders that we were unable to completely remove, and these are most visible in the hair curl model.</p>
       <p>Comparing between these models, we can see that Kajiya-Kay results in much softer highlights than Phong at least with our constants, and Marschner renders more realistic hair in a way that takes the physical geometry into account as described in the sections above.</p>
-   
-      <iframe width="840" height="630"
-      src="https://www.youtube.com/watch?v=JRiNvqOvnFI">
-      </iframe>
 
       <h1>References</h1><hr/>
       <p>J. T. Kajiya and T. L. Kay. 1989. Rendering fur with three dimensional textures. In Proceedings of the 16th annual conference on Computer graphics and interactive techniques (SIGGRAPH '89). Association for Computing Machinery, New York, NY, USA, 271–280. DOI: <a href="https://doi.org/10.1145/74333.74361">https://doi.org/10.1145/74333.74361</a></p>
